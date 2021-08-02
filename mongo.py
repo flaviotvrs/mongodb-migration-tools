@@ -81,7 +81,7 @@ class MongoDb:
         return stdout
 
     def run_command(self, command):
-        cmd = ["mongo", self.connection_string, "--quiet", "--eval", command]
+        cmd = ["mongosh", self.connection_string, "--quiet", "--eval", command]
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
         stdout, stderr = process.communicate()
         if stderr:

@@ -32,15 +32,13 @@ def migrate(origin_connection_string, destination_connection_string, collection,
         if handle_balancer and balancer_state:
             print_info("origin start balancer " + str(origin.start_balancer()))
 
-    if migration_result == 0:    
+    if migration_result == 0:
         print_success("migration finished successfuly")
-
-        if compare_documents:
-            print_info("origin document count")
-            print(origin.count_documents())
-            print_info("destination document count")
-            print(destination.count_documents())
     else:
         print_fail("migration finished with errors")
-        if compare_documents:
-            print_warning("will not compre documents")
+
+    if compare_documents:
+        print_info("origin document count")
+        print(origin.count_documents())
+        print_info("destination document count")
+        print(destination.count_documents())
