@@ -1,5 +1,7 @@
 import mongo
 from util import (print_info, print_success, print_fail, print_warning)
+import json
+import jsondiff
 
 def migrate(origin_connection_string, destination_connection_string, collection, handle_balancer, compare_documents, override):
 
@@ -38,7 +40,17 @@ def migrate(origin_connection_string, destination_connection_string, collection,
         print_fail("migration finished with errors")
 
     if compare_documents:
-        print_info("origin document count")
-        print(origin.count_documents())
-        print_info("destination document count")
-        print(destination.count_documents())
+        print_info("document count compare")
+        origin_count = origin.count_documents(collection if collection else "")
+        dest_count = destination.count_documents(collection if collection else "")
+
+        diff = jsondiff.diff(origin_count, dest_count)
+
+        if diff : 
+            print("Different")
+            print_fail("document count between clusters is different")
+            print(diff)
+            exit(1)
+        else :
+            print_success("document count match")
+            print(json.dumps(dest_count))

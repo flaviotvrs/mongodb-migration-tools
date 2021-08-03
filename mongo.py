@@ -1,6 +1,7 @@
 import subprocess
 import util
 from urllib.parse import urlparse
+import json
 
 class Migration:
 
@@ -74,11 +75,11 @@ class MongoDb:
         stdout = self.run_command("db.adminCommand( { listDatabases: 1, nameOnly: true } )")
         return (self.database in stdout)
 
-    def count_documents(self):
-        count_base = "db.getMongo().getDB('database-name').getCollectionNames().forEach(function (col) { print(col, db.getMongo().getDB('database-name').getCollection(col).countDocuments({}));});"
-        count_command = count_base.replace("database-name", self.database)
+    def count_documents(self, collection):
+        count_base = "var database = '<database>'; var collection = '<collection>'; var dict = {}; db.getMongo().getDB(database).getCollectionNames().forEach(function (col) { if (collection == '' || collection == col){ dict[col] = db.getMongo().getDB(database).getCollection(col).countDocuments({}); }}); print(JSON.stringify(dict));"
+        count_command = count_base.replace("<database>", self.database).replace("<collection>", collection)
         stdout = self.run_command(count_command)
-        return stdout
+        return json.loads(stdout)
 
     def run_command(self, command):
         cmd = ["mongosh", self.connection_string, "--quiet", "--eval", command]
