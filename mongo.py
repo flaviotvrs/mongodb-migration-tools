@@ -72,7 +72,9 @@ class MongoDb:
         return result
 
     def exists(self):
-        stdout = self.run_command("db.adminCommand( { listDatabases: 1, nameOnly: true } )")
+        find_base = "db.adminCommand( { listDatabases: 1, nameOnly: true, filter: { \"name\": /^<database>$/ } } )"
+        find_command = find_base.replace("<database>", self.database)
+        stdout = self.run_command(find_command)
         return (self.database in stdout)
 
     def count_documents(self, collection):
