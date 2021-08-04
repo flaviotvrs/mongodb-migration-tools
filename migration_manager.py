@@ -35,22 +35,27 @@ def migrate(origin_connection_string, destination_connection_string, collection,
             print_info("origin start balancer " + str(origin.start_balancer()))
 
     if migration_result == 0:
+
         print_success("migration finished successfuly")
+
+        if compare_documents:
+            print_info("document count compare")
+            origin_count = origin.count_documents(collection if collection else "")
+            dest_count = destination.count_documents(collection if collection else "")
+
+            diff = jsondiff.diff(origin_count, dest_count)
+
+            if diff :
+                print("Different")
+                print_fail("document count between clusters is different")
+                print(diff)
+                migration_result = 1
+            else :
+                print_success("document count match")
+                print(json.dumps(dest_count))
+
     else:
         print_fail("migration finished with errors")
 
-    if compare_documents:
-        print_info("document count compare")
-        origin_count = origin.count_documents(collection if collection else "")
-        dest_count = destination.count_documents(collection if collection else "")
-
-        diff = jsondiff.diff(origin_count, dest_count)
-
-        if diff : 
-            print("Different")
-            print_fail("document count between clusters is different")
-            print(diff)
-            exit(1)
-        else :
-            print_success("document count match")
-            print(json.dumps(dest_count))
+    if migration_result and migration_result > 0:
+        exit(1)
