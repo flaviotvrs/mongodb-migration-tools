@@ -8,7 +8,7 @@ with open('LICENSE') as f:
 
 setup(
     name='MongoDB Migration Tools',
-    version='1.1.0',
+    version='0.0.0',
     description='This tool allows you to copy a Mongo database from one cluster to another',
     long_description=readme,
     author='Flavio Augusto Rodrigues Tavares',
